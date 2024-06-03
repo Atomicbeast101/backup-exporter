@@ -31,7 +31,7 @@ formatter = logging.Formatter("%(asctime)s %(levelname)s %(message)s")
 console_handler = logging.StreamHandler()
 console_handler.setFormatter(formatter)
 file_handler = logging.handlers.RotatingFileHandler(
-    '/log/application.log',
+    '/log/app.log',
     maxBytes=1*1000000, # 1MB
     backupCount=5
 )

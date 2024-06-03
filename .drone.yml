@@ -1,0 +1,23 @@
+---
+kind: pipeline
+type: docker
+name: Production
+
+trigger:
+  branch:
+    - main
+
+steps:
+  - name: Build&Push Docker Image to Home Registry
+    image: thegeeklab/drone-docker-buildx
+    privileged: true
+    settings:
+      registry: registry.potatolab.dev
+      repo: registry.potatolab.dev/adam/${DRONE_REPO_NAME}
+      platforms: linux/amd64
+      username: 
+        from_secret: home_registry_username
+      password: 
+        from_secret: home_registry_password
+      tags: 
+        - latest
