@@ -8,6 +8,7 @@ import sqlite3
 import flask
 import time
 import os
+import re
 
 # Environment Variables
 API_HOST = '0.0.0.0'
@@ -30,13 +31,14 @@ formatter = logging.Formatter("%(asctime)s %(levelname)s %(message)s")
 console_handler = logging.StreamHandler()
 console_handler.setFormatter(formatter)
 file_handler = logging.handlers.RotatingFileHandler(
-    'application.log',
+    '/log/application.log',
     maxBytes=1*1000000, # 1MB
     backupCount=5
 )
 file_handler.setFormatter(formatter)
 logger.addHandler(console_handler)
 logger.addHandler(file_handler)
+service_name_pattern = r'^[a-z\-]*$'
 
 # Database
 db = sqlite3.connect('data.db', check_same_thread=False)
@@ -69,7 +71,7 @@ def update_metrics():
 @app.route('/api/status/<service>', methods=['POST'])
 def status(service):
     service = service.lower()
-    if service.isalpha():
+    if re.match(service_name_pattern, service):
         # Update data
         ts = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')
 
@@ -84,7 +86,7 @@ def status(service):
         cur.close()
         
         return flask.jsonify({'success':True}), 200
-    return flask.jsonify({'success': False, 'reason': 'Name must be all letters only!'}), 400
+    return flask.jsonify({'success': False, 'reason': 'Name must be all letters and/or - symbol only!'}), 400
 
 # Main
 def main():
